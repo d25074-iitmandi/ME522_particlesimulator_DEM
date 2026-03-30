@@ -3,6 +3,29 @@ module dem_force
  implicit none
  
 contains
+
+
+subroutine initialize_particles(p, n, L, B, H, r_val, m_val)
+        type(Particle), intent(inout) :: p(:)
+        integer, intent(in) :: n
+        real, intent(in) :: L, B, H, r_val, m_val
+        integer :: i
+
+        call random_seed()
+        do i = 1, n
+            ! Randomize positions safely inside the box to avoid initial wall overlap
+            call random_number(p(i)%pos)
+            p(i)%pos(1) = r_val + p(i)%pos(1) * (L - 2.0*r_val)
+            p(i)%pos(2) = r_val + p(i)%pos(2) * (B - 2.0*r_val)
+            p(i)%pos(3) = r_val + p(i)%pos(3) * (H - 2.0*r_val)
+            
+            p(i)%vel = 0.0
+            p(i)%force = 0.0
+            p(i)%radius = r_val
+            p(i)%mass = m_val
+        end do
+end subroutine initialize_particles
+
 ! The following subroutine ensures the force on particle at the beginning is zero  
 subroutine zero_forces(p, n)
         type(Particle), intent(inout) :: p(:)
@@ -12,6 +35,16 @@ subroutine zero_forces(p, n)
             p(i)%force = 0.0
         end do
 end subroutine zero_forces
+
+ subroutine add_gravity(p, n)
+        type(Particle), intent(inout) :: p(:)
+        integer, intent(in) :: n
+        integer :: i
+        do i = 1, n
+            p(i)%force(3) = p(i)%force(3) - (p(i)%mass * g)
+        end do
+    end subroutine add_gravity
+
     
 ! The following subroutine models contact force between the particles using the spring-dashpot model 
 subroutine compute_particle_contacts(p, n, kn, gamma_1, num_contacts)
@@ -130,5 +163,19 @@ subroutine integrate_particles(p, n, dt)
             p(i)%pos = p(i)%pos + p(i)%vel * dt
         end do
 end subroutine integrate_particles
+
+function compute_kinetic_energy(p, n) result(ke)
+        type(Particle), intent(in) :: p(:)
+        integer, intent(in) :: n
+        real :: ke
+        integer :: i
+        real :: speed_sq
+
+        ke = 0.0
+        do i = 1, n
+            speed_sq = dot_product(p(i)%vel, p(i)%vel)
+            ke = ke + 0.5 * p(i)%mass * speed_sq
+        end do
+end function compute_kinetic_energy
 
 end module dem_force
