@@ -1,7 +1,7 @@
 program main
  use particle_dem
  use dem_force
- use dem_io
+ use dem_o
  implicit none
   ! Setup Variables
     type(Particle), allocatable :: p(:)
