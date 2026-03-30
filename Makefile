@@ -32,4 +32,4 @@ main.o: main.f90 particle_dem.o dem_io.o dem_force.o
 
 # Clean up rule to remove generated files
 clean:
-	rm -f *.o *.mod $(TARGET) particles_*.vtu
+	rm -f *.o *.mod $(TARGET)
