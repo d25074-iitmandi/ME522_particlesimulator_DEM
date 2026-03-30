@@ -6,6 +6,7 @@ module particle_dem
   real :: pos(3)
   real :: vel(3)
   real :: mass
+  real :: force(3)
  end type Particle
  
  end module particle_dem
