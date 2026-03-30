@@ -9,6 +9,6 @@ module particle_dem
   real :: force(3)
  end type Particle
   
- real, parameter :: g = 9.81 !Gravitational force
+  real, parameter :: g = 9.81 ! acceleration due to gravity
 
 end module particle_dem
