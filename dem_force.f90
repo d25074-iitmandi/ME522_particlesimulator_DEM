@@ -1,5 +1,6 @@
 module dem_force
  use particle_dem
+ use omp_lib
  implicit none
  
 contains
@@ -58,7 +59,10 @@ subroutine compute_particle_contacts(p, n, kn, gamma_1, num_contacts)
         real :: fc_vec(3)
 
         num_contacts = 0
-
+ 
+ !$omp parallel do default(none) shared (p, gamma_1, kn, n) &
+ !$omp private(i, j, rij, dij, delij, nij, rel_v, vij, fc_mag, fc_vec) & 
+ !$omp reduction(+:num_contacts) schedule(dynamic)
         ! Loop over all unique pairs (i, j)
         do i = 1, n - 1
             do j = i + 1, n
@@ -85,11 +89,23 @@ subroutine compute_particle_contacts(p, n, kn, gamma_1, num_contacts)
                     fc_vec = fc_mag * nij
                     
                     ! Equal and opposite forces
-                    p(j)%force = p(j)%force + fc_vec
-                    p(i)%force = p(i)%force - fc_vec
+                   !$omp atomic
+                    p(j)%force(1) = p(j)%force(1) + fc_vec(1)
+                    !$omp atomic
+                    p(j)%force(2) = p(j)%force(2) + fc_vec(2)
+                    !$omp atomic
+                    p(j)%force(3) = p(j)%force(3) + fc_vec(3)
+                    
+                    !$omp atomic
+                    p(i)%force(1) = p(i)%force(1) - fc_vec(1)
+                    !$omp atomic
+                    p(i)%force(2) = p(i)%force(2) - fc_vec(2)
+                    !$omp atomic
+                    p(i)%force(3) = p(i)%force(3) - fc_vec(3)
                 end if
             end do
         end do
+!$omp end parallel do
 end subroutine compute_particle_contacts
 
 ! The following subroutine models the force from contact with the wall

@@ -1,6 +1,6 @@
 # Define the compiler and flags
 FC = gfortran
-FFLAGS = -O2 -Wall
+FFLAGS = -O3 -Wall -fopenmp -ffree-line-length-none -pg
 
 # Define the target executable name
 TARGET = dem_sim
