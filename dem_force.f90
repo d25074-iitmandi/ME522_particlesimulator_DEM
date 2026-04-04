@@ -11,8 +11,19 @@ subroutine initialize_particles(p, n, L, B, H, r_val, m_val)
         integer, intent(in) :: n
         real, intent(in) :: L, B, H, r_val, m_val
         integer :: i
+ integer :: n1
+ integer, allocatable :: seed(:)
 
-        call random_seed()
+  ! 1. Determine the required seed size for your compiler
+  call random_seed(size=n1)
+  allocate(seed(n1))
+
+  ! 2. Fill the array with a fixed set of integers for repeatability
+  seed = 12345 
+  
+  ! 3. Set the seed
+  call random_seed(put=seed)
+
         do i = 1, n
             ! Randomize positions safely inside the box to avoid initial wall overlap
             call random_number(p(i)%pos)
