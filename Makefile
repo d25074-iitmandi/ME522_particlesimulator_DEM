@@ -6,7 +6,8 @@ FFLAGS = -O3 -Wall -fopenmp -ffree-line-length-none -pg
 TARGET = dem_sim
 
 # Define the object files
-OBJS = particle_dem.o dem_io.o dem_force.o main.o
+#OBJS = particle_dem.o dem_io.o dem_force.o main.o
+OBJS = particle_dem.o dem_io.o neigh_dem_force.o main.o
 
 # The default rule: build the executable
 all: $(TARGET)
@@ -23,11 +24,12 @@ particle_dem.o: particle_dem.f90
 
 dem_io.o: dem_io.f90 particle_dem.o
 	$(FC) $(FFLAGS) -c $<
-
-dem_force.o: dem_force.f90 particle_dem.o
+#dem_force.o: dem_force.f90 particle_dem.o
+neigh_dem_force.o: neigh_dem_force.f90 particle_dem.o
 	$(FC) $(FFLAGS) -c $<
 
-main.o: main.f90 particle_dem.o dem_io.o dem_force.o
+#main.o: main.f90 particle_dem.o dem_io.o dem_force.o
+main.o: main.f90 particle_dem.o dem_io.o neigh_dem_force.o
 	$(FC) $(FFLAGS) -c $<
 
 # Clean up rule to remove generated files
