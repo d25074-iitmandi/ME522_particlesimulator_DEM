@@ -36,3 +36,18 @@ main.o: main.f90 particle_dem.o dem_io.o dem_force.o
 clean:
 	rm -f *.o *.mod $(TARGET)
 	rm *.txt
+required_plot:
+	gnuplot verify_trajectory.gp
+	gnuplot error_trajectory.gp
+	gnuplot bounce.gp
+	gnuplot kineticenergy1.gp
+	gnuplot particle_config.gp
+	
+parallel_plot:
+	gnuplot serialvkinetic.gp
+	
+performance_analysis_plot:
+	gnuplot speedup.gp
+	gnuplot efficiency.gp
+	
+	
