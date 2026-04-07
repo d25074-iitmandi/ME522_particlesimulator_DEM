@@ -37,17 +37,17 @@ clean:
 	rm -f *.o *.mod $(TARGET)
 	rm *.txt
 required_plot:
-	gnuplot verify_trajectory.gp
-	gnuplot error_trajectory.gp
-	gnuplot bounce.gp
-	gnuplot kineticenergy1.gp
-	gnuplot particle_config.gp
+	gnuplot plotting_scripts/verify_trajectory.gp
+	gnuplot plotting_scripts/error_trajectory.gp
+	gnuplot plotting_scripts/bounce.gp
+	gnuplot plotting_scripts/kineticenergy1.gp
+	gnuplot plotting_scripts/particle_config.gp
 	
 parallel_plot:
-	gnuplot serialvkinetic.gp
+	gnuplot plotting_scripts/serialvkinetic.gp
 	
 performance_analysis_plot:
-	gnuplot speedup.gp
-	gnuplot efficiency.gp
+	gnuplot plotting_scripts/speedup.gp
+	gnuplot plotting_scripts/efficiency.gp
 	
 	
