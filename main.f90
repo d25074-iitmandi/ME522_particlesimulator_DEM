@@ -27,12 +27,12 @@ program main
     box_max(2) = B
     box_max(3) = H
     
-    r_val = 0.25               ! Particle radius
+    r_val = 0.05               ! Particle radius
     m_val = 1.0                ! Particle mass
     max_diameter = r_val * 2
     
-    kn = 5000            ! Normal stiffness (Spring)
-    gamma_1 = 100.0            ! Damping coefficient (Dashpot)
+    kn = 1e5           ! Normal stiffness (Spring)
+    gamma_1 = 10.0            ! Damping coefficient (Dashpot)
 
     num_steps = int(t_total / dt)
     
@@ -53,8 +53,8 @@ program main
         call zero_forces(p, n(l1))
         call add_gravity(p, n(l1))
         call compute_particle_contacts(p, n(l1), kn, gamma_1, num_contacts)
-        !call compute_particle_contacts_grid(p, n, kn, gamma_1, num_contacts, &
-             !                             box_min, box_max, max_diameter)
+        !call compute_particle_contacts_grid(p, n(l1), kn, gamma_1, num_contacts, &
+         !                                 box_min, box_max, max_diameter)
         call compute_wall_contacts(p, n(l1), L, B, H, kn, gamma_1)
         call integrate_particles(p, n(l1), dt)
 
