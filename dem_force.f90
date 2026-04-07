@@ -31,7 +31,8 @@ subroutine initialize_particles(p, n, L, B, H, r_val, m_val)
             p(i)%pos(2) = r_val + p(i)%pos(2) * (B - 2.0*r_val)
             p(i)%pos(3) = r_val + p(i)%pos(3) * (H - 2.0*r_val)
             
-            p(i)%vel = 0.0
+            call random_number(p(i)%vel)
+            !p(i)%vel = 0.0
             p(i)%force = 0.0
             p(i)%radius = r_val
             p(i)%mass = m_val
