@@ -2,19 +2,19 @@
 !==============================================================================
 program main
  use particle_dem
- !use dem_force
- use neigh_dem_force
+ use dem_force
+ !use neigh_dem_force
  use dem_o
  implicit none
   ! Setup Variables
     type(Particle), allocatable :: p(:)
-    integer :: n, num_steps, step, num_contacts, i
+    integer :: n(4),num_steps, step, num_contacts, i, l1
     real :: t_total, dt, current_time
     real :: L, B, H, r_val, m_val, box_min(3), box_max(3), max_diameter
     real :: kn, gamma_1, ke, max_speed, current_speed
 
     ! 1. Initialize simulation parameters
-    n = 1000                  ! Number of particles
+    n = [1, 200, 1000, 5000]                  ! Number of particles
     t_total = 2.0           ! Total simulation time (seconds)
     dt = 0.0005             ! Time step (needs to be small for DEM)
     
@@ -31,14 +31,16 @@ program main
     m_val = 1.0                ! Particle mass
     max_diameter = r_val * 2
     
-    kn = 1000.0            ! Normal stiffness (Spring)
-    gamma_1 = 500.0            ! Damping coefficient (Dashpot)
+    kn = 5000            ! Normal stiffness (Spring)
+    gamma_1 = 100.0            ! Damping coefficient (Dashpot)
 
     num_steps = int(t_total / dt)
-    allocate(p(n))
+    
+    do l1 = 1, 4 
+    allocate(p(n(l1)))
 
     ! 2. Initialize particles
-    call initialize_particles(p, n, L, B, H, r_val, m_val)
+    call initialize_particles(p, n(l1), L, B, H, r_val, m_val)
 
   !  print *, "Starting DEM Simulation..."
   !  print *, "Time(s)    Kinetic Energy   Contacts   Max Speed"
@@ -48,31 +50,32 @@ program main
     do step = 1, num_steps
         current_time = real(step) * dt
 
-        call zero_forces(p, n)
-        call add_gravity(p, n)
-        !call compute_particle_contacts(p, n, kn, gamma_1, num_contacts)
-        call compute_particle_contacts_grid(p, n, kn, gamma_1, num_contacts, &
-                                          box_min, box_max, max_diameter)
-        !call compute_wall_contacts(p, n, L, B, H, kn, gamma_1)
-        call integrate_particles(p, n, dt)
+        call zero_forces(p, n(l1))
+        call add_gravity(p, n(l1))
+        call compute_particle_contacts(p, n(l1), kn, gamma_1, num_contacts)
+        !call compute_particle_contacts_grid(p, n, kn, gamma_1, num_contacts, &
+             !                             box_min, box_max, max_diameter)
+        call compute_wall_contacts(p, n(l1), L, B, H, kn, gamma_1)
+        call integrate_particles(p, n(l1), dt)
 
         ! 4. Diagnostics and Output (print every 100 steps)
         if (mod(step, 100) == 0) then
-            ke = compute_kinetic_energy(p, n)
+            ke = compute_kinetic_energy(p, n(l1))
            
             ! Calculate max speed
             max_speed = 0.0
-            do i = 1, n
+            do i = 1, n(l1)
                 current_speed = norm2(p(i)%vel)
                 if (current_speed > max_speed) max_speed = current_speed
             end do
 
-            call write_output(current_time, ke, num_contacts, max_speed)
+            call write_output(current_time, ke, num_contacts, max_speed,n(l1))
             
         end if
     end do
 
-    print *, "Simulation Complete."
+    print *, "Simulation Complete. for n =", n(l1)
     deallocate(p)
+enddo    
 
 end program main
